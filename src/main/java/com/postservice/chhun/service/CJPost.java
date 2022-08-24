@@ -32,7 +32,7 @@ public class CJPost implements SearchInterface{
 
             UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder
                     .fromUriString(secondUrl)
-                    .queryParam("paramInvcNo", "649933938254")
+                    .queryParam("paramInvcNo", postNumber)
                     .queryParam("_csrf",csrf);
 
             conn = Jsoup.connect(uriComponentsBuilder.toUriString()).header("set-cookie",headers);
