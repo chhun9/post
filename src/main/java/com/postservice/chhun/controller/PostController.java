@@ -1,21 +1,24 @@
 package com.postservice.chhun.controller;
 
-import com.postservice.chhun.dto.ResponseVO;
+import com.postservice.chhun.dto.Delivery;
+import com.postservice.chhun.dto.DeliveryInfo;
 import com.postservice.chhun.service.SearchPost;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class PostController {
     SearchPost searchPost;
 
-    public PostController(SearchPost searchPost){
+    public PostController(SearchPost searchPost) {
         this.searchPost = searchPost;
     }
 
     @GetMapping("/searchPost/{postNumber}")
-    public ResponseVO searchCode(@PathVariable String postNumber) {
-        return searchPost.searchPost(postNumber);
+    public ResponseEntity<List<DeliveryInfo>> searchCode(@PathVariable String postNumber) {
+        return new ResponseEntity<>(searchPost.searchPost(postNumber), HttpStatus.OK);
     }
 }

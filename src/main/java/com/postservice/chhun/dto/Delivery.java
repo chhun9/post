@@ -2,7 +2,7 @@ package com.postservice.chhun.dto;
 
 import java.util.regex.Pattern;
 
-public class DeliveryInfo {
+public class Delivery {
     private String who;
     private String where;
     private String whenDate;
@@ -38,13 +38,27 @@ public class DeliveryInfo {
         this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return "DeliveryInfo{" +
-                "where='" + where + '\'' +
-                ", whenDate='" + whenDate + '\'' +
-                ", whenTime='" + whenTime + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+    public String getWho() {
+        return who;
+    }
+
+    public void setWho(String who) {
+        this.who = who;
+    }
+
+    public String getWhere() {
+        return where;
+    }
+
+    public String getWhenDate() {
+        return whenDate;
+    }
+
+    public String getWhenTime() {
+        return whenTime;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

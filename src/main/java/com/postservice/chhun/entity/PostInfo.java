@@ -1,7 +1,7 @@
 package com.postservice.chhun.entity;
 
 import com.postservice.chhun.config.StringJsonConverter;
-import com.postservice.chhun.dto.DeliveryInfo;
+import com.postservice.chhun.dto.Delivery;
 
 import javax.persistence.*;
 import java.util.List;
@@ -17,5 +17,5 @@ public class PostInfo {
 
     @Convert(converter = StringJsonConverter.class)
     @Column(columnDefinition = "json")
-    private List<DeliveryInfo> postContent;
+    private List<Delivery> postContent;
 }
