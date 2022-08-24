@@ -1,13 +1,13 @@
 package com.postservice.chhun.entity;
 
 import com.postservice.chhun.config.StringJsonConverter;
-import com.postservice.chhun.dto.Delivery;
+import com.postservice.chhun.dto.DeliveryDTO;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class PostInfo {
+public class DeliveryInfo {
     @GeneratedValue
     @Id
     private Long id;
@@ -17,5 +17,5 @@ public class PostInfo {
 
     @Convert(converter = StringJsonConverter.class)
     @Column(columnDefinition = "json")
-    private List<Delivery> postContent;
+    private List<DeliveryDTO> postContent;
 }

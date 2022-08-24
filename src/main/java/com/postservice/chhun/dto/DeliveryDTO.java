@@ -2,7 +2,7 @@ package com.postservice.chhun.dto;
 
 import java.util.regex.Pattern;
 
-public class Delivery {
+public class DeliveryDTO {
     private String who;
     private String where;
     private String whenDate;

@@ -1,7 +1,7 @@
 package com.postservice.chhun.service;
 
-import com.postservice.chhun.dto.Delivery;
-import com.postservice.chhun.dto.DeliveryInfo;
+import com.postservice.chhun.config.KindOfPost;
+import com.postservice.chhun.dto.DeliveryInfoDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -9,12 +9,23 @@ import java.util.*;
 @Service
 public class SearchPost {
 
-    public List<DeliveryInfo> searchPost(String postNumber) {
-        List<DeliveryInfo> deliveries = new ArrayList<>(new ArrayList<>());
+    public List<DeliveryInfoDTO> searchPost(String postNumber) {
+        List<DeliveryInfoDTO> deliveries = new ArrayList<>(new ArrayList<>());
 
-        List<Delivery> deliveryKPost = KPost.searchPost_kpost(postNumber);
+        for (KindOfPost kindOfPost : KindOfPost.values()) {
+            SearchInterface searchInterface = null;
+            if (KindOfPost.KOR_POST.equals(kindOfPost)) {
+                searchInterface = new KPost();
+            } else if (KindOfPost.KOR_CJ.equals(kindOfPost)) {
+                searchInterface = null;
+            }
 
-        deliveries.add(new DeliveryInfo("kpsot",deliveryKPost));
+            if (null == searchInterface)
+                continue;
+
+            deliveries.add(new DeliveryInfoDTO(kindOfPost.getName(), searchInterface.searchPost(postNumber)));
+        }
+
         return deliveries;
     }
 

@@ -1,7 +1,6 @@
 package com.postservice.chhun.controller;
 
-import com.postservice.chhun.dto.Delivery;
-import com.postservice.chhun.dto.DeliveryInfo;
+import com.postservice.chhun.dto.DeliveryInfoDTO;
 import com.postservice.chhun.service.SearchPost;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,7 @@ public class PostController {
     }
 
     @GetMapping("/searchPost/{postNumber}")
-    public ResponseEntity<List<DeliveryInfo>> searchCode(@PathVariable String postNumber) {
+    public ResponseEntity<List<DeliveryInfoDTO>> searchCode(@PathVariable String postNumber) {
         return new ResponseEntity<>(searchPost.searchPost(postNumber), HttpStatus.OK);
     }
 }
