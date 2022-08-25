@@ -28,10 +28,9 @@ public class CJPost implements SearchInterface {
         Document document = secondePostConnect(secondUrl, firstConnection);
         try {
             Map<String, Object> documentBody = new ObjectMapper().readValue(document.select("body").text(), Map.class);
-            Map<String,Object> resultMap = new ObjectMapper().convertValue(documentBody.get("parcelDetailResultMap"),Map.class);
-            List<Map<String,String>> resultList = (List<Map<String,String>>)(resultMap.get("resultList"));
-            
-            
+            Map<String, Object> resultMap = new ObjectMapper().convertValue(documentBody.get("parcelDetailResultMap"), Map.class);
+            List<Map<String, String>> resultList = (List<Map<String, String>>) (resultMap.get("resultList"));
+
             for (Map<String, String> detailStatus : resultList) {
                 deliveryDTOInfos.add(new DeliveryDTO.Builder()
                         .setInfo(detailStatus.get("dTime").split(" ")[0])

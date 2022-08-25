@@ -54,6 +54,26 @@ public class DeliveryDTO {
         this.status = status;
     }
 
+    public String getWho() {
+        return who;
+    }
+
+    public String getWhere() {
+        return where;
+    }
+
+    public String getWhenDate() {
+        return whenDate;
+    }
+
+    public String getWhenTime() {
+        return whenTime;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
     public static class Builder{
         private String who;
         private String where;

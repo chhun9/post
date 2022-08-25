@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KPost implements SearchInterface{
+public class KPost implements SearchInterface {
     public List<DeliveryDTO> searchPost(String postNumber) {
         String url = "https://service.epost.go.kr/trace.RetrieveDomRigiTraceList.comm";
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder
