@@ -19,6 +19,10 @@ public class DeliveryDTO {
             setWhenTime(text);
         } else if (ret = Pattern.matches("^\\d{2}:\\d{2}$", text)) {
             setWhenTime(text);
+        } else if (ret = Pattern.matches("^\\d{2}:\\d{2}:\\d{2}.\\d{2}$", text)) {
+            setWhenTime(text);
+        } else if (ret = Pattern.matches("^\\d{2}:\\d{2}:\\d{2}.\\d{1}$", text)) {
+            setWhenTime(text);
         }
         return ret;
     }

@@ -17,7 +17,7 @@ public class SearchPost {
             if (KindOfPost.KOR_POST.equals(kindOfPost)) {
                 searchInterface = new KPost();
             } else if (KindOfPost.KOR_CJ.equals(kindOfPost)) {
-                searchInterface = null;
+                searchInterface = new CJPost();
             }
 
             if (null == searchInterface)

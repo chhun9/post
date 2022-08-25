@@ -11,38 +11,66 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.net.CookieStore;
 import java.net.HttpCookie;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class CJPost implements SearchInterface{
+public class CJPost implements SearchInterface {
     @Override
     public List<DeliveryDTO> searchPost(String postNumber) {
         String firstUrl = "https://www.cjlogistics.com/ko/tool/parcel/tracking";
         String secondUrl = "https://www.cjlogistics.com/ko/tool/parcel/tracking-detail";
 
-        Connection conn = Jsoup.connect(firstUrl);
 
+        Map<String, String> firstConnection = firstGetConnect(firstUrl);
+        firstConnection.put("paramInvcNo", postNumber);
+
+        Document document = secondePostConnect(secondUrl, firstConnection);
+
+        List<DeliveryDTO> deliveryDTOs = new ArrayList<>();
+        return deliveryDTOs;
+    }
+
+    private Map<String, String> firstGetConnect(String url) {
+        Connection getCjDeliverAuth = Jsoup.connect(url);
         try {
-            Document document = conn.get();
-            String headers = document.connection().response().headers().get("set-cookie");
+            Document document = getCjDeliverAuth.get();
+
+            Map<String, List<String>> allHeaders = document.connection().response().multiHeaders();
+            String getCookieFromHeaders = allHeaders.keySet()
+                    .stream().filter(key -> key.equalsIgnoreCase("set-cookie"))
+                    .findFirst()
+                    .get();
+
+            String cookie = allHeaders.get(getCookieFromHeaders)
+                    .stream().map(key -> key.substring(0, key.indexOf(';')))
+                    .collect(Collectors.joining("; "));
+
             String csrf = document.select("input[name='_csrf']").stream()
                     .filter(c -> !c.val().isEmpty())
                     .findFirst().get().val();
 
-            UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder
-                    .fromUriString(secondUrl)
-                    .queryParam("paramInvcNo", postNumber)
-                    .queryParam("_csrf",csrf);
-
-            conn = Jsoup.connect(uriComponentsBuilder.toUriString()).header("set-cookie",headers);
-            Document document1 = conn.get();
-
-            List<DeliveryDTO> deliveryDTOs = new ArrayList<>();
-            return deliveryDTOs;
-        } catch (IOException ignored) {
+            return Map.of("_csrf", csrf, "Cookie", cookie);
+        } catch (IOException ioException) {
+            System.out.println(ioException.getMessage());
+            return null;
         }
-        return null;
+    }
+
+    private Document secondePostConnect(String url, Map<String, String> params) {
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder
+                .fromUriString(url)
+                .queryParam("paramInvcNo", params.get("paramInvcNo"))
+                .queryParam("_csrf", params.get("_csrf"));
+
+        Connection statusDelivery = Jsoup.connect(uriComponentsBuilder.toUriString())
+                .header("Cookie", params.get("Cookie"))
+                .ignoreContentType(true);
+        try {
+            return statusDelivery.post();
+        } catch (IOException ioException) {
+            System.out.println(ioException.getMessage());
+            return null;
+        }
     }
 
 }
