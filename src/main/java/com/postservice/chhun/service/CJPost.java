@@ -1,36 +1,58 @@
 package com.postservice.chhun.service;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.postservice.chhun.dto.DeliveryDTO;
-import com.postservice.chhun.entity.DeliveryInfo;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.net.CookieStore;
-import java.net.HttpCookie;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CJPost implements SearchInterface {
     @Override
     public List<DeliveryDTO> searchPost(String postNumber) {
+        List<DeliveryDTO> deliveryDTOInfos = new ArrayList<>();
         String firstUrl = "https://www.cjlogistics.com/ko/tool/parcel/tracking";
         String secondUrl = "https://www.cjlogistics.com/ko/tool/parcel/tracking-detail";
 
 
-        Map<String, String> firstConnection = firstGetConnect(firstUrl);
-        firstConnection.put("paramInvcNo", postNumber);
+        Map<String, String> firstConnection = firstGetConnect(firstUrl, postNumber);
 
         Document document = secondePostConnect(secondUrl, firstConnection);
+        try {
+            Map<String, Object> documentBody = new ObjectMapper().readValue(document.select("body").text(), Map.class);
+            Map<String,Object> resultMap = new ObjectMapper().convertValue(documentBody.get("parcelDetailResultMap"),Map.class);
+            List<Map<String,String>> resultList = (List<Map<String,String>>)(resultMap.get("resultList"));
+            
+            
+            for (Map<String, String> detailStatus : resultList) {
+                deliveryDTOInfos.add(new DeliveryDTO.Builder()
+                        .setInfo(detailStatus.get("dTime").split(" ")[0])
+                        .setInfo(detailStatus.get("dTime").split(" ")[1])
+                        .setWhere(detailStatus.get("regBranNm"))
+                        .setStatus(detailStatus.get("scanNm"))
+                        .build()
+                );
+            }
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        List<DeliveryDTO> deliveryDTOs = new ArrayList<>();
-        return deliveryDTOs;
+        return deliveryDTOInfos;
     }
 
-    private Map<String, String> firstGetConnect(String url) {
+    private Map<String, String> firstGetConnect(String url, String postNumber) {
         Connection getCjDeliverAuth = Jsoup.connect(url);
         try {
             Document document = getCjDeliverAuth.get();
@@ -49,7 +71,7 @@ public class CJPost implements SearchInterface {
                     .filter(c -> !c.val().isEmpty())
                     .findFirst().get().val();
 
-            return Map.of("_csrf", csrf, "Cookie", cookie);
+            return Map.of("_csrf", csrf, "Cookie", cookie, "paramInvcNo", postNumber);
         } catch (IOException ioException) {
             System.out.println(ioException.getMessage());
             return null;
