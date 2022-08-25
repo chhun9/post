@@ -1,6 +1,7 @@
 package com.postservice.chhun.service;
 
 import com.postservice.chhun.config.KindOfPost;
+import com.postservice.chhun.dto.DeliveryDTO;
 import com.postservice.chhun.dto.DeliveryInfoDTO;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,11 @@ public class SearchPost {
             }
 
             if (null == searchInterface)
+                continue;
+
+            List<DeliveryDTO> deliveryList = searchInterface.searchPost(postNumber);
+
+            if (null == deliveryList || deliveryList.isEmpty())
                 continue;
 
             deliveries.add(new DeliveryInfoDTO(kindOfPost.getName(), searchInterface.searchPost(postNumber)));

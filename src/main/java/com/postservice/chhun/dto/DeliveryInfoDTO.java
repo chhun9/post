@@ -9,17 +9,12 @@ public class DeliveryInfoDTO {
     private String name;
     private List<DeliveryDTO> deliveries;
 
-    public DeliveryInfoDTO() {
-    }
-
     public DeliveryInfoDTO(String name, List<DeliveryDTO> deliveries) {
         this.name = name;
         this.deliveries = deliveries;
     }
 
     public String getName() {
-        if (deliveries.isEmpty())
-            return null;
         return name;
     }
 
