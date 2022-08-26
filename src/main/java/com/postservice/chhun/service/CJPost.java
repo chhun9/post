@@ -3,6 +3,8 @@ package com.postservice.chhun.service;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.postservice.chhun.config.Dom;
+import com.postservice.chhun.config.Url;
 import com.postservice.chhun.dto.DeliveryDTO;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -19,24 +21,20 @@ public class CJPost implements SearchInterface {
     @Override
     public List<DeliveryDTO> searchPost(String postNumber) {
         List<DeliveryDTO> deliveryDTOInfos = new ArrayList<>();
-        String firstUrl = "https://www.cjlogistics.com/ko/tool/parcel/tracking";
-        String secondUrl = "https://www.cjlogistics.com/ko/tool/parcel/tracking-detail";
 
-
-        Map<String, String> firstConnection = firstGetConnect(firstUrl, postNumber);
-
-        Document document = secondePostConnect(secondUrl, firstConnection);
+        Map<String, String> firstConnection = firstGetConnect(Url.KOR_CJ_POST_FIRST_URL.getVal(), postNumber);
+        Document document = secondPostConnect(Url.KOR_CJ_POST_SECOND_URL.getVal(), firstConnection);
         try {
-            Map<String, Object> documentBody = new ObjectMapper().readValue(document.select("body").text(), Map.class);
-            Map<String, Object> resultMap = new ObjectMapper().convertValue(documentBody.get("parcelDetailResultMap"), Map.class);
-            List<Map<String, String>> resultList = (List<Map<String, String>>) (resultMap.get("resultList"));
+            Map<String, Object> documentBody = new ObjectMapper().readValue(document.select(Dom.BODY.getVal()).text(), Map.class);
+            Map<String, Object> resultMap = new ObjectMapper().convertValue(documentBody.get(Dom.KOR_CJ_POST_D_RESULT_MAP.getVal()), Map.class);
+            List<Map<String, String>> resultList = (List<Map<String, String>>) (resultMap.get(Dom.KOR_CJ_POST_D_RESULT_LIST.getVal()));
 
             for (Map<String, String> detailStatus : resultList) {
                 deliveryDTOInfos.add(new DeliveryDTO.Builder()
-                        .setInfo(detailStatus.get("dTime").split(" ")[0])
-                        .setInfo(detailStatus.get("dTime").split(" ")[1])
-                        .setWhere(detailStatus.get("regBranNm"))
-                        .setStatus(detailStatus.get("scanNm"))
+                        .setInfo(detailStatus.get(Dom.KOR_CJ_POST_D_TIME.getVal()).split(" ")[0])
+                        .setInfo(detailStatus.get(Dom.KOR_CJ_POST_D_TIME.getVal()).split(" ")[1])
+                        .setWhere(detailStatus.get(Dom.KOR_CJ_POST_D_REG_NAME.getVal()))
+                        .setStatus(detailStatus.get(Dom.KOR_CJ_POST_D_SCAN_NAME.getVal()))
                         .build()
                 );
             }
@@ -58,7 +56,7 @@ public class CJPost implements SearchInterface {
 
             Map<String, List<String>> allHeaders = document.connection().response().multiHeaders();
             String getCookieFromHeaders = allHeaders.keySet()
-                    .stream().filter(key -> key.equalsIgnoreCase("set-cookie"))
+                    .stream().filter(key -> key.equalsIgnoreCase(Dom.KOR_CJ_POST_SET_COOKIE.getVal()))
                     .findFirst()
                     .get();
 
@@ -66,25 +64,25 @@ public class CJPost implements SearchInterface {
                     .stream().map(key -> key.substring(0, key.indexOf(';')))
                     .collect(Collectors.joining("; "));
 
-            String csrf = document.select("input[name='_csrf']").stream()
+            String csrf = document.select(Dom.KOR_CJ_POST_CSRF.getVal()).stream()
                     .filter(c -> !c.val().isEmpty())
                     .findFirst().get().val();
 
-            return Map.of("_csrf", csrf, "Cookie", cookie, "paramInvcNo", postNumber);
+            return Map.of(Dom.CSRF.preGet("_"), csrf, Dom.KOR_CJ_POST_COOKIE.getVal(), cookie, Dom.KOR_CJ_POST_POSTNUMBER.getVal(), postNumber);
         } catch (IOException ioException) {
             System.out.println(ioException.getMessage());
             return null;
         }
     }
 
-    private Document secondePostConnect(String url, Map<String, String> params) {
+    private Document secondPostConnect(String url, Map<String, String> params) {
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder
                 .fromUriString(url)
-                .queryParam("paramInvcNo", params.get("paramInvcNo"))
-                .queryParam("_csrf", params.get("_csrf"));
+                .queryParam(Dom.KOR_CJ_POST_POSTNUMBER.getVal(), params.get(Dom.KOR_CJ_POST_POSTNUMBER.getVal()))
+                .queryParam(Dom.KOR_CJ_POST_CSRF.getVal(), params.get(Dom.KOR_CJ_POST_CSRF.getVal()));
 
         Connection statusDelivery = Jsoup.connect(uriComponentsBuilder.toUriString())
-                .header("Cookie", params.get("Cookie"))
+                .header(Dom.KOR_CJ_POST_COOKIE.getVal(), params.get(Dom.KOR_CJ_POST_COOKIE.getVal()))
                 .ignoreContentType(true);
         try {
             return statusDelivery.post();
