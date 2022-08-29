@@ -34,6 +34,4 @@ public class SearchPost {
 
         return deliveries;
     }
-
-
 }
