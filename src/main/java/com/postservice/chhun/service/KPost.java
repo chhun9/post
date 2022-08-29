@@ -29,7 +29,7 @@ public class KPost implements SearchInterface {
             Elements processTableEl = document.select(Dom.get(" ", Dom.PROCESS_TABLE_ID, Dom.TABLE_BODY));
 
             for (Element elementTableRow : processTableEl.select(Dom.TABLE_ROW.getVal())) {
-                deliveryDTOInfos.add(parseDocument(elementTableRow));
+                deliveryDTOInfos.add(parseProcessDocument(elementTableRow));
             }
             return deliveryDTOInfos;
         } catch (IOException ignored) {
@@ -37,7 +37,7 @@ public class KPost implements SearchInterface {
         return null;
     }
 
-    private DeliveryDTO parseDocument(Element elementTableRow) {
+    private DeliveryDTO parseProcessDocument(Element elementTableRow) {
         DeliveryDTO returnDeliveryDTO = new DeliveryDTO();
         for (Element elementTableColumn : elementTableRow.select(Dom.TABLE_COLUMN.getVal())) {
             if (returnDeliveryDTO.setInfo(elementTableColumn.text()))
