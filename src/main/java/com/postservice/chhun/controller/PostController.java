@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +35,9 @@ public class PostController {
             return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
 
         try {
-            SearchInterface searchInterface = null;
+            Class<?> postClass = Class.forName(String.format("com.postservice.chhun.service.%s", kindOfPost.getClassName()));
+            Constructor<?> constructor = postClass.getConstructor(null);
+            SearchInterface searchInterface = (SearchInterface) constructor.newInstance();
             DeliveryInfoDTO deliveryInfoDTO = new DeliveryInfoDTO(kindOfPost.getName(), searchInterface.searchPost(postNumber));
             return new ResponseEntity<>(deliveryInfoDTO, HttpStatus.OK);
         } catch (Exception exception) {
