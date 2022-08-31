@@ -1,8 +1,5 @@
 package com.postservice.chhun.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public enum KindOfPost {
     KOR_POST("우체국","KPost"),
     KOR_CJ("CJ","CJPost");
