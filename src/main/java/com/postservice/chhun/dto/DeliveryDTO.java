@@ -74,7 +74,7 @@ public class DeliveryDTO {
         return status;
     }
 
-    public static class Builder{
+    public static class Builder {
         private String who;
         private String where;
         private String whenDate;
@@ -97,6 +97,7 @@ public class DeliveryDTO {
             }
             return this;
         }
+
         public Builder setWho(String who) {
             this.who = who;
             return this;

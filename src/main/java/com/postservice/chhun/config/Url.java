@@ -10,6 +10,7 @@ public enum Url {
     Url(String val) {
         this.val = val;
     }
+
     public String getVal() {
         return val;
     }

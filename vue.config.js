@@ -1,6 +1,6 @@
 module.exports = {
-    pages:{
-        index:{
+    pages: {
+        index: {
             entry: 'src/main/vue/src/main.js'
         }
     }
